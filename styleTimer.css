@@ -1,0 +1,125 @@
+html,
+body {
+    height: 100%;
+    flex-direction: column
+}
+
+html {
+    background-color: rgb(236, 235, 235);
+}
+
+body {
+    /* Центрирование игрового поля */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial;
+}
+
+.field {
+    width: 400px;
+    height: 400px;
+    background-color: lightgreen;
+    border-radius: 9px;
+    /* Для позиционирования ячеек относительно игрового поля */
+    position: relative;
+}
+
+.field__cell {
+    width: 81.25px;
+    height: 81.25px;
+    position: absolute;
+    border-radius: 3px;
+}
+
+.field__cell--null {
+    background-color: greenyellow;
+}
+
+.field__cell--tile {
+    background-color: green;
+    color: white;
+    font-size: 42px;
+    font-weight: bold;
+
+    /* Центрирование числа по костяшке */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Анимация */
+    transition: left 0.5s ease, top 0.5s ease;
+}
+
+#modal, #timermod{
+
+    /* Видимость */
+    visibility: hidden;
+
+    /* Обозначим ширину и высоту в div к этому ещё и сдвиним на 50% для точного центрирования*/
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+
+    /* Центрирование */
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+
+    /* Визуал */
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 50px;
+    font-family: monospace;
+    border-radius: 9px;
+
+    /* Анимация */
+    opacity: 0;
+    transition: visible 1s ease, visibility 1s ease;
+    
+
+    /* Порядок элементов */
+    z-index: 1;
+}
+
+#display {
+    font-size: 30px;
+    text-align: center;
+    margin-bottom: 20px;
+    transition: visible 1s ease;
+}
+
+#modal.modal--visible, #timermod.timermod--visible{
+    visibility: visible;
+    transition: opacity 1s ease, visibility 1s ease;
+    opacity: 1;
+}
+
+a:link {
+    color: purple;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+a:hover {
+    color: rgb(82, 36, 82);
+    background-color: transparent;
+    text-decoration: bold;
+}
+
+a:active {
+    color: rgb(59, 33, 59);
+    background-color: transparent;
+    text-decoration: bold;
+}
+
+a{
+    font-size: 30px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: monospace;
+}
