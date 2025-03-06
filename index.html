@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>С 8 Марта!</title>
+
+    <link rel="icon" href="icon.png">
+
+    <style>
+        body {
+            margin: 0;
+            overflow-x: hidden;
+            background: #f3dde7;
+            font-family: 'Pacifico', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #canvas {
+            margin-top: 50px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .congrats {
+            text-align: center;
+            color: #ff0066;
+            margin: 30px;
+            opacity: 0;
+            animation: fadeIn 2s forwards;
+            animation-delay: 3s;
+            position: relative;
+            z-index: 3;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(255, 0, 102, 0.3);
+            animation: textFloat 3s ease-in-out infinite;
+        }
+
+        p {
+            font-size: 1.5em;
+            line-height: 1.6;
+            max-width: 600px;
+        }
+
+        .flower {
+            position: fixed;
+            opacity: 0;
+            font-size: 20px;
+            pointer-events: none;
+            z-index: 1;
+            animation: float 8s infinite linear;
+            filter: drop-shadow(0 0 2px rgba(255, 0, 102, 0.2));
+        }
+
+        @keyframes float {
+            0% { 
+                opacity: 0;
+                transform: translate(-50%, 100vh) rotate(0deg);
+            }
+            20% { opacity: 0.15; }
+            80% { opacity: 0.15; }
+            100% { 
+                opacity: 0;
+                transform: translate(-50%, -100vh) rotate(360deg);
+            }
+        }
+
+        @keyframes textFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .qrcode {
+            position: absolute;
+            top: 33%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="congrats">
+        <h1>С Международным Женским Днём!</h1>
+        <p>Дорогие, прекрасные, удивительные!<br>
+        Пусть каждый день дарит улыбки и вдохновение,<br>
+        Жизнь наполняется яркими красками,<br>
+        А сердце — любовью и теплом!<br>
+        Вы делаете этот мир лучше! Мы вас любим и ценим!</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth * 0.8;
+            canvas.height = Math.min(window.innerHeight * 0.6, 500);
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Line {
+            constructor(start, end) {
+                this.start = start;
+                this.end = end;
+                this.progress = 0;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.start.x, this.start.y);
+                ctx.lineTo(
+                    this.start.x + (this.end.x - this.start.x) * this.progress,
+                    this.start.y + (this.end.y - this.start.y) * this.progress
+                );
+                ctx.strokeStyle = '#ff0066';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+        }
+
+        const heartPoints = [];
+        for (let t = 0; t < Math.PI * 2; t += 0.1) {
+            const x = 16 * Math.pow(Math.sin(t), 3);
+            const y = - (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t));
+            heartPoints.push({x: x * 10 + canvas.width/2, y: y * 10 + canvas.height/2});
+        }
+
+        const lines = [];
+        for (let i = 0; i < heartPoints.length - 1; i++) {
+            lines.push(new Line(heartPoints[i], heartPoints[i + 1]));
+        }
+
+        let currentLine = 0;
+        function animateHeart() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if(currentLine < lines.length) {
+                lines[currentLine].progress = Math.min(1, lines[currentLine].progress + 0.3);
+                if(lines[currentLine].progress >= 1) currentLine++;
+            }
+
+            lines.forEach(line => line.draw());
+
+            if(currentLine < lines.length) {
+                requestAnimationFrame(animateHeart);
+            } else {
+                // Анимация сердца завершена, добавляем QR-код
+                const qrcode = document.createElement('img');
+                qrcode.src = 'qrcode.png'; // Укажите путь к вашему изображению QR-кода
+                qrcode.className = 'qrcode';
+                document.body.appendChild(qrcode);
+
+                // Плавное появление QR-кода
+                setTimeout(() => {
+                    qrcode.style.opacity = 1;
+                }, 500);
+            }
+        }
+
+        function createHoneycombFlowers() {
+            const flowers = ['🌸', '🌷', '🌺', '🌼'];
+            const radius = 100;
+            const verticalSpacing = radius * Math.sqrt(3);
+            
+            const cols = Math.ceil(window.innerWidth / (radius * 2)) + 1;
+            const rows = Math.ceil(window.innerHeight / verticalSpacing) + 1;
+
+            for (let row = -1; row < rows; row++) {
+                for (let col = -1; col < cols; col++) {
+                    const x = col * radius * 2 + (row % 2 === 0 ? radius : 0);
+                    const y = row * verticalSpacing;
+
+                    const flower = document.createElement('div');
+                    flower.className = 'flower';
+                    flower.style.left = `${x}px`;
+                    flower.style.top = `${y}px`;
+                    flower.style.animationDelay = `${Math.random() * 5}s`;
+                    flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
+                    
+                    document.body.appendChild(flower);
+                }
+            }
+        }
+
+        animateHeart();
+        createHoneycombFlowers();
+    </script>
+</body>
+</html>
